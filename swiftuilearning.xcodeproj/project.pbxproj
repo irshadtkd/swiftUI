@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B701A76A2F232DE80046F870 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = B701A7692F232DE80046F870 /* FirebaseAuth */; };
+		B709EDFD2F9601E0002CAB18 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = B709EDFC2F9601E0002CAB18 /* FirebaseMessaging */; };
 		B722805E2F2873BB003C3BCE /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = B722805D2F2873BB003C3BCE /* FirebaseCore */; };
 /* End PBXBuildFile section */
 
@@ -70,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B709EDFD2F9601E0002CAB18 /* FirebaseMessaging in Frameworks */,
 				B722805E2F2873BB003C3BCE /* FirebaseCore in Frameworks */,
 				B701A76A2F232DE80046F870 /* FirebaseAuth in Frameworks */,
 			);
@@ -142,6 +144,7 @@
 			packageProductDependencies = (
 				B701A7692F232DE80046F870 /* FirebaseAuth */,
 				B722805D2F2873BB003C3BCE /* FirebaseCore */,
+				B709EDFC2F9601E0002CAB18 /* FirebaseMessaging */,
 			);
 			productName = swiftuilearning;
 			productReference = B7D69BCB2F21EA5D00FB5504 /* swiftuilearning.app */;
@@ -641,6 +644,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B701A7682F232CF00046F870 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
+		};
+		B709EDFC2F9601E0002CAB18 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B701A7682F232CF00046F870 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 		B722805D2F2873BB003C3BCE /* FirebaseCore */ = {
 			isa = XCSwiftPackageProductDependency;
