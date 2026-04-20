@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import AVFoundation
+import Combine
 
 final class HomeViewModel: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     
@@ -33,11 +34,29 @@ final class HomeViewModel: NSObject, ObservableObject, AVSpeechSynthesizerDelega
     
     private let service = APIService.shared
     private let synthesizer = AVSpeechSynthesizer()
+    private var cancellables = Set<AnyCancellable>()
     
     override init() {
         super.init()
         synthesizer.delegate = self
         setupCurrentDate()
+        isNotificationsEnabled = UserDefaultsManager.shared.notificationsEnabled
+        observeNotificationToggle()
+    }
+    
+    private func observeNotificationToggle() {
+        $isNotificationsEnabled
+            .dropFirst()
+            .receive(on: DispatchQueue.main)
+            .sink { enabled in
+                UserDefaultsManager.shared.notificationsEnabled = enabled
+                if enabled {
+                    UIApplication.shared.registerForRemoteNotifications()
+                } else {
+                    UIApplication.shared.unregisterForRemoteNotifications()
+                }
+            }
+            .store(in: &cancellables)
     }
     
     private func setupCurrentDate() {

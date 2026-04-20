@@ -15,6 +15,7 @@ final class UserDefaultsManager {
     private let defaults = UserDefaults.standard
     private let tutorialKey = "hasSeenTutorial"
     private let loginKey = "isLoggedIn"
+    private let notificationsEnabledKey = "notificationsEnabled"
     private let lastLearnedDateKey = "learningStats.lastLearnedDate"
     private let wordsLearnedCountKey = "learningStats.wordsLearnedCount"
     private let dayStreakKey = "learningStats.dayStreak"
@@ -27,6 +28,16 @@ final class UserDefaultsManager {
     var isLoggedIn: Bool {
         get { defaults.bool(forKey: loginKey) }
         set { defaults.set(newValue, forKey: loginKey) }
+    }
+
+    // Returns true if the key has never been set (first-launch default = enabled)
+    var notificationsEnabled: Bool {
+        get {
+            defaults.object(forKey: notificationsEnabledKey) == nil
+                ? true
+                : defaults.bool(forKey: notificationsEnabledKey)
+        }
+        set { defaults.set(newValue, forKey: notificationsEnabledKey) }
     }
 
     // MARK: - Learning stats (storage only; logic in LearningStatsManager)

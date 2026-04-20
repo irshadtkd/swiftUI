@@ -57,6 +57,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
             completionHandler(.noData)
             return
         }
+        guard UserDefaultsManager.shared.notificationsEnabled else {
+            completionHandler(.noData)
+            return
+        }
         completionHandler(.newData)
     }
     
@@ -72,6 +76,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
+        guard UserDefaultsManager.shared.notificationsEnabled else {
+            completionHandler([])
+            return
+        }
         completionHandler([.banner, .badge, .sound])
     }
     
@@ -92,12 +100,16 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
                     print("Notification permission error: \(error.localizedDescription)")
                     return
                 }
-                if granted {
-                    DispatchQueue.main.async {
-                        UIApplication.shared.registerForRemoteNotifications()
-                    }
-                } else {
+                guard granted else {
                     print("Notification permission denied")
+                    return
+                }
+                guard UserDefaultsManager.shared.notificationsEnabled else {
+                    print("Notifications disabled by user preference — skipping registration")
+                    return
+                }
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
                 }
             }
     }
