@@ -36,12 +36,18 @@ final class HomeViewModel: NSObject, ObservableObject, AVSpeechSynthesizerDelega
     private let synthesizer = AVSpeechSynthesizer()
     private var cancellables = Set<AnyCancellable>()
     
+    private let profileImageURL: URL? = FileManager.default
+        .urls(for: .documentDirectory, in: .userDomainMask)
+        .first?.appendingPathComponent("userProfileImage.jpg")
+    
     override init() {
         super.init()
         synthesizer.delegate = self
         setupCurrentDate()
         isNotificationsEnabled = UserDefaultsManager.shared.notificationsEnabled
+        loadProfileImageFromDisk()
         observeNotificationToggle()
+        observeProfileImageChanges()
     }
     
     private func observeNotificationToggle() {
@@ -57,6 +63,40 @@ final class HomeViewModel: NSObject, ObservableObject, AVSpeechSynthesizerDelega
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    private func observeProfileImageChanges() {
+        $userProfileImage
+            .dropFirst()
+            .sink { [weak self] image in
+                self?.saveProfileImageToDisk(image)
+            }
+            .store(in: &cancellables)
+    }
+    
+    // MARK: - Profile Image Persistence
+    
+    private func loadProfileImageFromDisk() {
+        guard let url = profileImageURL,
+              FileManager.default.fileExists(atPath: url.path),
+              let data = try? Data(contentsOf: url),
+              let image = UIImage(data: data) else { return }
+        userProfileImage = image
+    }
+    
+    private func saveProfileImageToDisk(_ image: UIImage?) {
+        guard let url = profileImageURL else { return }
+        if let image, let data = image.jpegData(compressionQuality: 0.85) {
+            try? data.write(to: url, options: .atomic)
+        } else {
+            try? FileManager.default.removeItem(at: url)
+        }
+    }
+    
+    private func deleteProfileImageFromDisk() {
+        guard let url = profileImageURL,
+              FileManager.default.fileExists(atPath: url.path) else { return }
+        try? FileManager.default.removeItem(at: url)
     }
     
     private func setupCurrentDate() {
@@ -244,6 +284,8 @@ final class HomeViewModel: NSObject, ObservableObject, AVSpeechSynthesizerDelega
     }
     
     func logout(appState: AppState) {
+        deleteProfileImageFromDisk()
+        userProfileImage = nil
         UserDefaultsManager.shared.isLoggedIn = false
         appState.flow = .login
     }
